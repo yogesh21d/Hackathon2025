@@ -1,0 +1,349 @@
+[{
+        "config_name": "prism_element_1",
+        "data_center": "phx",
+        "auto_scale_vms": false,
+        "workload": {
+            "prefill_storage": false,
+            "check_ssd_usage_prefill": false,
+            "start_workload": true,
+            "wait_for_full_scan": false
+        },
+        "distribute_images": true,
+        "gflags": {
+            "stargate": {
+                "--activity_tracer_default_sampling_frequency": 1
+            },
+            "scavenger": {
+                "--timeout_secs": "3600"
+            }
+        },
+        "containers": [{
+            "name": "c1",
+            "compression_enabled": true
+        },
+        {
+            "name": "c2",
+            "compression_enabled": true
+        }],
+        "networks": [{
+            "name": "auto_vlan",
+            "vlan_id": "auto"
+        }],
+        "vms": [{
+                "name": "T1",
+                "description": "vm type 1",
+                "image_name": "centos7",
+                "workload": "draas_vdbench_vdi",
+                "auto_scale": false,
+                "num": 12,
+                "data_disk_size_in_gb": 20,
+                "num_data_disk": 3,
+                "device_bus": "scsi",
+                "network": "auto_vlan",
+                "container_name": "c1",
+                "memory_mb": 1024,
+                "num_vcpus": 1,
+                "num_cores_per_vcpu": 1,
+                "install_ngt": false
+            },
+            {
+                "name": "T2",
+                "description": "vm type 2",
+                "image_name": "centos7",
+                "workload": "draas_vdbench_vdi",
+                "auto_scale": false,
+                "num": 10,
+                "data_disk_size_in_gb": 20,
+                "num_data_disk": 3,
+                "device_bus": "scsi",
+                "network": "auto_vlan",
+                "container_name": "c1",
+                "memory_mb": 1024,
+                "num_vcpus": 1,
+                "num_cores_per_vcpu": 1,
+                "install_ngt": false
+            },
+            {
+                "name": "T3",
+                "description": "IOIntegrity VMs",
+                "image_name": "centos8_io_int",
+                "auto_scale": false,
+                "num": 3,
+                "data_disk_size_in_gb": 50,
+                "num_data_disk": 3,
+                "device_bus": "scsi",
+                "network": "auto_vlan",
+                "container_name": "c2",
+                "memory_mb": 8192,
+                "num_vcpus": 2,
+                "num_cores_per_vcpu": 2,
+                "install_ngt": true
+            },
+            {
+                "name": "T4",
+                "description": "large disk vms",
+                "image_name": "centos7",
+                "workload": "draas_vdbench_vdi",
+                "auto_scale": false,
+                "num": 10,
+                "data_disk_size_in_gb": 300,
+                "num_data_disk": 3,
+                "device_bus": "scsi",
+                "network": "auto_vlan",
+                "container_name": "c2",
+                "memory_mb": 1024,
+                "num_vcpus": 1,
+                "num_cores_per_vcpu": 1,
+                "install_ngt": false
+            },
+            {
+                "name": "T5",
+                "description": "secure boot vms for vdbench vdi workload",
+                "image_name": "centos73_secure_boot",
+                "secure_boot": true,
+                "workload": "vdbench_vdi",
+                "auto_scale": false,
+                "num": 5,
+                "data_disk_size_in_gb": 10,
+                "num_data_disk": 2,
+                "device_bus": "scsi",
+                "network": "auto_vlan",
+                "container_name": "c1",
+                "memory_mb": 512,
+                "num_vcpus": 1,
+                "num_cores_per_vcpu": 2,
+                "install_ngt": false,
+                "vm_name_pattern": "ST_{cluster}_{name}_{container_name}_centos73_sb_{bus_type}_{num:04}"
+            }
+        ],
+        "vgs": [],
+        "recreate_cluster": {},
+        "pc": {},
+        "app_clusters": [],
+        "client_vms": [],
+        "remote_sites": [],
+        "pds": [],
+        "metro_pds": []
+    },
+    {
+        "config_name": "prism_element_2",
+        "data_center": "phx",
+        "auto_scale_vms": false,
+        "workload": {
+            "prefill_storage": false,
+            "check_ssd_usage_prefill": false,
+            "start_workload": true,
+            "wait_for_full_scan": false
+        },
+        "distribute_images": false,
+        "gflags": {
+            "stargate": {
+                "--activity_tracer_default_sampling_frequency": 1
+            },
+            "scavenger": {
+                "--timeout_secs": "3600"
+            }
+        },
+        "containers": [{
+            "name": "c1",
+            "compression_enabled": true
+        }],
+        "networks": [{
+            "name": "auto_vlan",
+            "vlan_id": "auto"
+        }],
+        "vms": [
+            {
+                "name": "T6",
+                "description": "win10_vdbench",
+                "image_name": "win10",
+                "workload": "draas_vdbench_vdi",
+                "auto_scale": false,
+                "num": 10,
+                "data_disk_size_in_gb": 50,
+                "num_data_disk": 1,
+                "device_bus": "scsi",
+                "network": "auto_vlan",
+                "container_name": "c1",
+                "memory_mb": 2048,
+                "num_vcpus": 1,
+                "num_cores_per_vcpu": 2,
+                "install_ngt": false
+            },
+            {
+                "name": "T7",
+                "description": "win10_vdbench_ngt",
+                "image_name": "win10",
+                "workload": "draas_vdbench_vdi",
+                "auto_scale": false,
+                "num": 10,
+                "data_disk_size_in_gb": 50,
+                "num_data_disk": 1,
+                "device_bus": "scsi",
+                "network": "auto_vlan",
+                "container_name": "c1",
+                "memory_mb": 2048,
+                "num_vcpus": 1,
+                "num_cores_per_vcpu": 2,
+                "install_ngt": false
+            },
+            {
+                "name": "T8",
+                "description": "windows cred guard",
+                "image_name": "win10_cg",
+                "secure_boot": true,
+                "credential_guard": true,
+                "workload": "vdbench_vdi",
+                "auto_scale": false,
+                "num": 5,
+                "data_disk_size_in_gb": 200,
+                "num_data_disk": 2,
+                "device_bus": "scsi",
+                "network": "auto_vlan",
+                "container_name": "c1",
+                "memory_mb": 2048,
+                "num_vcpus": 1,
+                "num_cores_per_vcpu": 2,
+                "install_ngt": false
+            },
+            {
+                "name": "T9",
+                "description": "windows uefi",
+                "image_name": "win22_uefi_admin_autolog",
+                "boot_type": "UEFI",
+                "workload": "vdbench_vdi",
+                "auto_scale": false,
+                "num": 5,
+                "data_disk_size_in_gb": 64,
+                "num_data_disk": 1,
+                "device_bus": "scsi",
+                "network": "auto_vlan",
+                "container_name": "c1",
+                "memory_mb": 4096,
+                "num_vcpus": 4,
+                "num_cores_per_vcpu": 1,
+                "install_ngt": false,
+                "vm_name_pattern": "ST_{cluster}_{name}_{container_name}_w22_uefi_aa_{bus_type}_{num:04}"
+            }
+        ],
+        "vgs": [],
+        "recreate_cluster": {},
+        "pc": {},
+        "app_clusters": [],
+        "client_vms": [],
+        "remote_sites": [],
+        "pds": []
+    },
+    {
+        "config_name": "prism_element_3",
+        "data_center": "phx",
+        "auto_scale_vms": false,
+        "workload": {
+            "prefill_storage": false,
+            "check_ssd_usage_prefill": false,
+            "start_workload": true,
+            "wait_for_full_scan": false
+        },
+        "distribute_images": false,
+        "gflags": {
+            "stargate": {
+                "--activity_tracer_default_sampling_frequency": 1
+            },
+            "scavenger": {
+                "--timeout_secs": "3600"
+            }
+        },
+        "containers": [{
+            "name": "c1",
+            "compression_enabled": true
+        }],
+        "networks": [{
+            "name": "auto_vlan",
+            "vlan_id": "auto"
+        }],
+        "vms": [
+        {
+                "name": "B1",
+                "description": "mssql_hammerdb",
+                "image_name": "sql_hammerdb",
+                "workload": "mssql_hammerdb",
+                "auto_scale": false,
+                "num": 2,
+                "data_disk_size_in_gb": 200,
+                "num_data_disk": 6,
+                "device_bus": "scsi",
+                "network": "auto_vlan",
+                "container_name": "c1",
+                "memory_mb": 32768,
+                "num_vcpus": 4,
+                "num_cores_per_vcpu": 2,
+                "install_ngt": false
+            },
+            {
+                "name": "B2",
+                "description": "vdbench_vdi_ngt",
+                "image_name": "centos7_uefi",
+                "boot_type": "UEFI",
+                "workload": "draas_vdbench_vdi",
+                "auto_scale": false,
+                "num": 18,
+                "data_disk_size_in_gb": 50,
+                "num_data_disk": 1,
+                "device_bus": "scsi",
+                "cd_rom_bus": "sata",
+                "network": "auto_vlan",
+                "container_name": "c1",
+                "memory_mb": 2048,
+                "num_vcpus": 1,
+                "num_cores_per_vcpu": 2,
+                "install_ngt": false
+            },
+            {
+                "name": "B3",
+                "description": "win_secure_boot",
+                "image_name": "win2016_secure_boot",
+                "secure_boot": true,
+                "workload": "draas_vdbench_vdi",
+                "auto_scale": false,
+                "num": 5,
+                "data_disk_size_in_gb": 50,
+                "num_data_disk": 1,
+                "device_bus": "scsi",
+                "cd_rom_bus": "sata",
+                "network": "auto_vlan",
+                "container_name": "c1",
+                "memory_mb": 2048,
+                "num_vcpus": 1,
+                "num_cores_per_vcpu": 2,
+                "install_ngt": false,
+                "vm_name_pattern": "ST_{cluster}_{name}_{container_name}_w16_sb_{bus_type}_{num:04}"
+            },
+            {
+                "name": "B4",
+                "description": "vTPM",
+                "image_name": "win11_vtpm",
+                "secure_boot": true,
+                "workload": "vdbench_vdi",
+                "auto_scale": false,
+                "num": 5,
+                "data_disk_size_in_gb": 200,
+                "num_data_disk": 1,
+                "device_bus": "scsi",
+                "cd_rom_bus": "sata",
+                "network": "auto_vlan",
+                "container_name": "c1",
+                "memory_mb": 2048,
+                "num_vcpus": 1,
+                "num_cores_per_vcpu": 2,
+                "install_ngt": false
+            }
+        ],
+        "vgs": [],
+        "recreate_cluster": {},
+        "pc": {},
+        "app_clusters": [],
+        "client_vms": [],
+        "remote_sites": [],
+        "pds": []
+    }
+]

@@ -1,0 +1,371 @@
+{
+    "hybrid_az_async_async_async_tfo_upfo": {
+        "variable_substitutions": {
+            "$var_cat_name_1$": "$load_dynamic_cat_name$",
+            "$var_cat_val_1$": "$load_dynamic_cat_val$"
+        },
+        "draas_setup": [
+            {
+                "title": "Configuring multi site draas entities(PC1)",
+                "pc_name": "prism_central_1",
+                "category_config": [
+                    {
+                        "name": "$var_cat_name_1$",
+                        "description": "multi protect",
+                        "values": [
+                            "$var_cat_val_1$"
+                        ],
+                        "vm_name_regex": ".*T[1-5].*",
+                        "max_vm_count_per_key_value": 50
+                    }
+                ],
+                "rp_config": [
+                    {
+                        "name": "st-rp-pc-1-pc-2",
+                        "description": "Recovery plan from PC1 to PC2",
+                        "target_pc_name": "prism_central_2",
+                        "stage_config": [
+                            {
+                                "entity_list": [
+                                    {
+                                        "category_names": "$var_cat_name_1$:$var_cat_val_1$",
+                                        "enable_script_exec": false
+                                    }
+                                ]
+                            }
+                        ],
+                        "network_mapping_list": [
+                            {
+                                "source_production_subnet": {
+                                    "name": "auto_vlan"
+                                },
+                                "source_test_subnet": {
+                                    "name": "auto_vlan"
+                                },
+                                "remote_production_subnet": {
+                                    "name": "auto_vlan"
+                                },
+                                "remote_test_subnet": {
+                                    "name": "auto_vlan"
+                                }
+                            }
+                        ]
+                    }
+                ],
+                "pr_config": [
+                    {
+                        "name": "st-multi-site-pr-1",
+                        "description": "Protection Rule - Multi site",
+                        "category_list": [
+                            {
+                                "$var_cat_name_1$": [
+                                    "$var_cat_val_1$"
+                                ]
+                            }
+                        ],
+                        "multi_site_config": [
+                            {
+                                "source_pc_name": "prism_central_1",
+                                "source_pe_name": "prism_element_1",
+                                "target_pc_name": "prism_central_2",
+                                "target_pe_name": "prism_element_2",
+                                "snapshot_type": "CRASH_CONSISTENT",
+                                "schedule_type": "LINEAR",
+                                "rpo_secs": 3600,
+                                "local_retention": {
+                                    "num_snapshots": 3
+                                },
+                                "remote_retention": {
+                                    "num_snapshots": 3
+                                }
+                            },
+                            {
+                                "source_pc_name": "prism_central_1",
+                                "source_pe_name": "prism_element_1",
+                                "target_pc_name": "prism_central_2",
+                                "target_pe_name": "prism_element_3",
+                                "snapshot_type": "CRASH_CONSISTENT",
+                                "schedule_type": "LINEAR",
+                                "rpo_secs": 3600,
+                                "local_retention": {
+                                    "num_snapshots": 3
+                                },
+                                "remote_retention": {
+                                    "num_snapshots": 3
+                                }
+                            },
+                            {
+                                "source_pc_name": "prism_central_2",
+                                "source_pe_name": "prism_element_2",
+                                "target_pc_name": "prism_central_2",
+                                "target_pe_name": "prism_element_3",
+                                "snapshot_type": "CRASH_CONSISTENT",
+                                "schedule_type": "LINEAR",
+                                "rpo_secs": 3600,
+                                "local_retention": {
+                                    "num_snapshots": 3
+                                },
+                                "remote_retention": {
+                                    "num_snapshots": 3
+                                }
+                            }
+                        ]
+                    }
+                ],
+                "workload_duration": 900,
+                "workload_config": [
+                    {
+                        "vm_name_regex": ".*T3.*",
+                        "workload_args": {
+                            "workload_name": "io_integrity_systest",
+                            "param_cfg_name": "random_4k_64k_read_write_25_iops_100_hrs"
+                        }
+                    }
+                ]
+            },
+            {
+                "pc_name": "prism_central_2",
+                "title": "Configuring Self az Recovery plans on PC2",
+                "rp_config": [
+                    {
+                        "name": "st-rp-pe-2-pe-3",
+                        "description": "Recovery plan from PC2:PE2 to PC2:PE3",
+                        "self_az": true,
+                        "source_pe_name": "prism_element_2",
+                        "target_pe_name": "prism_element_3",
+                        "stage_config": [
+                            {
+                                "entity_list": [
+                                    {
+                                        "category_names": "$var_cat_name_1$:$var_cat_val_1$",
+                                        "enable_script_exec": false
+                                    }
+                                ]
+                            }
+                        ],
+                        "network_mapping_list": [
+                            {
+                                "source_production_subnet": {
+                                    "name": "auto_vlan"
+                                },
+                                "source_test_subnet": {
+                                    "name": "auto_vlan"
+                                },
+                                "remote_production_subnet": {
+                                    "name": "auto_vlan"
+                                },
+                                "remote_test_subnet": {
+                                    "name": "auto_vlan"
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "workflow_config": [
+            {
+                "description": "Test Failovers",
+                "workflow_group": [
+                    {
+                        "workflow": "tfo",
+                        "pc_name": "prism_central_1",
+                        "remote_pc_name": "prism_central_2",
+                        "target_pe_name": "prism_element_2",
+                        "rp_name_list": [
+                            "st-rp-pc-1-pc-2"
+                        ],
+                        "description": "Test failover scenario from PC1:PE1 to PC2:PE2"
+                    },
+                    {
+                        "workflow": "tfo",
+                        "pc_name": "prism_central_1",
+                        "remote_pc_name": "prism_central_2",
+                        "target_pe_name": "prism_element_3",
+                        "rp_name_list": [
+                            "st-rp-pc-1-pc-2"
+                        ],
+                        "description": "Test failover scenario from PC1:PE1 to PC2:PE3"
+                    }
+                ]
+            },
+            {
+                "description": "UPFO from PC1:PE1 --> PC2:PE2",
+                "workflow_group": [
+                    {
+                        "workflow": "set_unset_network_partition",
+                        "operation": "block",
+                        "network_fault_from": ["prism_element_1", "prism_central_1"],
+                        "network_fault_to": ["prism_element_2", "prism_central_2"],
+                        "description": "Stopping replications from PE1 [By partitioning network]"
+                    },
+                    {
+                        "workflow": "upfo",
+                        "pc_name": "prism_central_1",
+                        "remote_pc_name": "prism_central_2",
+                        "target_pe_name": "prism_element_2",
+                        "rp_name_list": [
+                            "st-rp-pc-1-pc-2"
+                        ],
+                        "clean_up": "source",
+                        "skip_reprotect_check": true,
+                        "description": "Unplanned failover scenario from PC1:PE1 to PC2:PE2",
+                        "workload_config": [
+                            {
+                                "vm_name_regex": ".*T3.*",
+                                "wait_workload": true,
+                                "workload_args": {
+                                    "workload_name": "io_integrity_systest",
+                                    "clean_run": false,
+                                    "params": {
+                                        "mode": "verify"
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "workflow": "set_unset_network_partition",
+                        "operation": "unblock",
+                        "network_fault_from": ["prism_element_1", "prism_central_1"],
+                        "network_fault_to": ["prism_element_2", "prism_central_2"],
+                        "description": "Restarting replications from PE1"
+                    },
+                    {
+                        "pc_name": "prism_central_2",
+                        "workflow": "add_remove_vms_category",
+                        "category_config": [
+                            {
+                                "category_name": "$var_cat_name_1$:$var_cat_val_1$",
+                                "vm_name_pattern": ".*T[6-9].*"
+                            }
+                        ],
+                        "operation": "add",
+                        "description": "Add new vms to protected category in PC2"
+                    }
+                ]
+            },
+            {
+                "description": "UPFO from PC2:PE2 --> PC2:PE3",
+                "workflow_group": [
+                    {
+                        "workflow": "set_unset_network_partition",
+                        "operation": "block",
+                        "network_fault_from": ["prism_element_2"],
+                        "network_fault_to": ["prism_element_3"],
+                        "description": "Stopping replications from PE2 [By partitioning network]"
+                    },
+                    {
+                        "workflow": "set_unset_network_partition",
+                        "operation": "block",
+                        "network_fault_from": ["prism_central_1"],
+                        "network_fault_to": ["prism_central_2"],
+                        "description": "Stopping connectivity between AZes [PC1->PC2] [By partitioning network]"
+                    },
+                    {
+                        "workflow": "upfo",
+                        "pc_name": "prism_central_2",
+                        "self_az": true,
+                        "source_pe_name": "prism_element_2",
+                        "target_pe_name": "prism_element_3",
+                        "rp_name_list": [
+                            "st-rp-pe-2-pe-3"
+                        ],
+                        "clean_up": "source",
+                        "skip_reprotect_check": true,
+                        "description": "Unplanned failover scenario from PC2:PE2 to PC2:PE3",
+                        "workload_config": [
+                            {
+                                "vm_name_regex": ".*T3.*",
+                                "wait_workload": true,
+                                "workload_args": {
+                                    "workload_name": "io_integrity_systest",
+                                    "clean_run": false,
+                                    "params": {
+                                        "mode": "verify"
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "workflow": "set_unset_network_partition",
+                        "operation": "unblock",
+                        "network_fault_from": ["prism_element_2"],
+                        "network_fault_to": ["prism_element_3"],
+                        "description": "Restarting replications from PE2"
+                    },
+                    {
+                        "workflow": "set_unset_network_partition",
+                        "operation": "unblock",
+                        "network_fault_from": ["prism_central_1"],
+                        "network_fault_to": ["prism_central_2"],
+                        "description": "Restarting connectivity between AZes [PC1->PC2]"
+                    },
+                    {
+                        "pc_name": "prism_central_2",
+                        "workflow": "add_remove_vms_category",
+                        "category_config": [
+                            {
+                                "category_name": "$var_cat_name_1$:$var_cat_val_1$",
+                                "vm_name_pattern": ".*B[1-4].*"
+                            }
+                        ],
+                        "operation": "add",
+                        "description": "Add new vms to protected category in PC2"
+                    }
+                ]
+            },
+            {
+                "description": "UPFO from PC2:PE3 --> PC1:PE1",
+                "workflow_group": [
+                    {
+                        "workflow": "set_unset_network_partition",
+                        "operation": "block",
+                        "network_fault_from": ["prism_element_3", "prism_central_2"],
+                        "network_fault_to": ["prism_element_1", "prism_central_1"],
+                        "description": "Stopping replications from PE3 [By partitioning network]"
+                    },
+                    {
+                        "workflow": "upfo",
+                        "pc_name": "prism_central_2",
+                        "remote_pc_name": "prism_central_1",
+                        "rp_name_list": [
+                            "st-rp-pc-1-pc-2"
+                        ],
+                        "clean_up": "source",
+                        "skip_reprotect_check": true,
+                        "description": "Unplanned failover scenario from PC2:PE3 to PC1:PE1",
+                        "workload_config": [
+                            {
+                                "vm_name_regex": ".*T3.*",
+                                "wait_workload": true,
+                                "workload_args": {
+                                    "workload_name": "io_integrity_systest",
+                                    "clean_run": false,
+                                    "params": {
+                                        "mode": "verify"
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "workflow": "set_unset_network_partition",
+                        "operation": "unblock",
+                        "network_fault_from": ["prism_element_3", "prism_central_2"],
+                        "network_fault_to": ["prism_element_1", "prism_central_1"],
+                        "description": "Restarting replications from PE3"
+                    }
+                ]
+            }
+        ],
+        "timeout": {
+            "rpj_timeout_secs": 7200,
+            "short_sleep_duration": 0,
+            "sleep_duration_min": 0,
+            "prism_sync_secs": 0
+        },
+        "verify_pe_in_pc_ops": true
+    }
+}

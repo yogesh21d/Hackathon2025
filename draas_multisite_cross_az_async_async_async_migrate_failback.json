@@ -1,0 +1,405 @@
+{
+    "cross_az_async_async_async_migrate_failback": {
+        "variable_substitutions": {
+            "$var_cat_name_1$": "$load_dynamic_cat_name$",
+            "$var_cat_val_1$": "$load_dynamic_cat_val$"
+        },
+        "draas_setup": [
+            {
+                "title": "Configuring multi site draas entities(PC1)",
+                "pc_name": "prism_central_1",
+                "category_config": [
+                    {
+                        "name": "$var_cat_name_1$",
+                        "description": "multi protect",
+                        "values": [
+                            "$var_cat_val_1$"
+                        ],
+                        "vm_name_regex": ".*T[1-5].*",
+                        "max_vm_count_per_key_value": 50
+                    }
+                ],
+                "rp_config": [
+                    {
+                        "name": "st-rp-pc1-pc-2",
+                        "description": "Recovery plan from PC1 to PC2",
+                        "target_pc_name": "prism_central_2",
+                        "stage_config": [
+                            {
+                                "entity_list": [
+                                    {
+                                        "category_names": "$var_cat_name_1$:$var_cat_val_1$",
+                                        "enable_script_exec": false
+                                    }
+                                ]
+                            }
+                        ],
+                        "network_mapping_list": [
+                            {
+                                "source_production_subnet": {
+                                    "name": "auto_vlan"
+                                },
+                                "source_test_subnet": {
+                                    "name": "auto_vlan"
+                                },
+                                "remote_production_subnet": {
+                                    "name": "auto_vlan"
+                                },
+                                "remote_test_subnet": {
+                                    "name": "auto_vlan"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "name": "st-rp-pc1-pc-3",
+                        "description": "Recovery plan from PC1 to PC3",
+                        "target_pc_name": "prism_central_3",
+                        "stage_config": [
+                            {
+                                "entity_list": [
+                                    {
+                                        "category_names": "$var_cat_name_1$:$var_cat_val_1$",
+                                        "enable_script_exec": false
+                                    }
+                                ]
+                            }
+                        ],
+                        "network_mapping_list": [
+                            {
+                                "source_production_subnet": {
+                                    "name": "auto_vlan"
+                                },
+                                "source_test_subnet": {
+                                    "name": "auto_vlan"
+                                },
+                                "remote_production_subnet": {
+                                    "name": "auto_vlan"
+                                },
+                                "remote_test_subnet": {
+                                    "name": "auto_vlan"
+                                }
+                            }
+                        ]
+                    }
+                ],
+                "pr_config": [
+                    {
+                        "name": "st-multi-site-pr-1",
+                        "description": "Protection Rule - Multi site",
+                        "category_list": [
+                            {
+                                "$var_cat_name_1$": [
+                                    "$var_cat_val_1$"
+                                ]
+                            }
+                        ],
+                        "multi_site_config": [
+                            {
+                                "source_pc_name": "prism_central_1",
+                                "source_pe_name": "prism_element_1",
+                                "target_pc_name": "prism_central_2",
+                                "target_pe_name": "prism_element_2",
+                                "snapshot_type": "CRASH_CONSISTENT",
+                                "schedule_type": "LINEAR",
+                                "rpo_secs": 3600,
+                                "local_retention": {
+                                    "num_snapshots": 3
+                                },
+                                "remote_retention": {
+                                    "num_snapshots": 3
+                                }
+                            },
+                            {
+                                "source_pc_name": "prism_central_1",
+                                "source_pe_name": "prism_element_1",
+                                "target_pc_name": "prism_central_3",
+                                "target_pe_name": "prism_element_3",
+                                "snapshot_type": "CRASH_CONSISTENT",
+                                "schedule_type": "LINEAR",
+                                "rpo_secs": 3600,
+                                "local_retention": {
+                                    "num_snapshots": 3
+                                },
+                                "remote_retention": {
+                                    "num_snapshots": 3
+                                }
+                            },
+                            {
+                                "source_pc_name": "prism_central_2",
+                                "source_pe_name": "prism_element_2",
+                                "target_pc_name": "prism_central_3",
+                                "target_pe_name": "prism_element_3",
+                                "snapshot_type": "CRASH_CONSISTENT",
+                                "schedule_type": "LINEAR",
+                                "rpo_secs": 3600,
+                                "local_retention": {
+                                    "num_snapshots": 3
+                                },
+                                "remote_retention": {
+                                    "num_snapshots": 3
+                                }
+                            }
+                        ]
+                    }
+                ],
+                "workload_duration": 900,
+                "workload_config": [
+                    {
+                        "vm_name_regex": ".*T3.*",
+                        "workload_args": {
+                            "workload_name": "io_integrity_systest",
+                            "param_cfg_name": "random_4k_64k_read_write_25_iops_100_hrs"
+                        }
+                    }
+                ]
+            },
+            {
+                "pc_name": "prism_central_2",
+                "remote_pc_name": "prism_central_3",
+                "title": "Configuring Recovery plans on PC2",
+                "rp_config": [
+                    {
+                        "name": "st-rp-pc2-pc-3",
+                        "entity_check": false,
+                        "description": "Recovery plan from PC2 to PC3",
+                        "target_pc_name": "prism_central_3",
+                        "stage_config": [
+                            {
+                                "entity_list": [
+                                    {
+                                        "category_names": "$var_cat_name_1$:$var_cat_val_1$",
+                                        "enable_script_exec": false
+                                    }
+                                ]
+                            }
+                        ],
+                        "network_mapping_list": [
+                            {
+                                "source_production_subnet": {
+                                    "name": "auto_vlan"
+                                },
+                                "source_test_subnet": {
+                                    "name": "auto_vlan"
+                                },
+                                "remote_production_subnet": {
+                                    "name": "auto_vlan"
+                                },
+                                "remote_test_subnet": {
+                                    "name": "auto_vlan"
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "workflow_config": [
+            {
+                "description": "Migrate workflows between PC1 and PC2 ",
+                "workflow_group": [
+                    {
+                        "workflow": "pfo",
+                        "pc_name": "prism_central_1",
+                        "remote_pc_name": "prism_central_2",
+                        "failover": true,
+                        "failback": true,
+                        "rp_name_list": [
+                            "st-rp-pc1-pc-2"
+                        ],
+                        "description": "Failover/Failback from PC1 to PC2"
+                    },
+                    {
+                        "workflow": "pfo",
+                        "pc_name": "prism_central_1",
+                        "remote_pc_name": "prism_central_2",
+                        "failover": true,
+                        "failback": false,
+                        "rp_name_list": [
+                            "st-rp-pc1-pc-2"
+                        ],
+                        "description": "Planned failover from PC1 to PC2(With integrity check)",
+                        "workload_config": [
+                            {
+                                "vm_name_regex": ".*T3.*",
+                                "wait_workload": true,
+                                "workload_args": {
+                                    "workload_name": "io_integrity_systest",
+                                    "clean_run": false,
+                                    "params": {
+                                        "mode": "verify"
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "workflow": "sleep",
+                        "pc_name": "prism_central_2",
+                        "duration_min": 70,
+                        "description": "Check if new recovery points are created on PC1 and PC3 for vms in pc2",
+                        "check_rpt_config": [
+                            {
+                                "vm_name_regex": ".*T[1-5].*",
+                                "min_rpt_count": 1,
+                                "pc_name": "prism_central_1"
+                            },
+                            {
+                                "vm_name_regex": ".*T[1-5].*",
+                                "min_rpt_count": 1,
+                                "pc_name": "prism_central_3"
+                            }
+                        ]
+                    },
+                    {
+                        "pc_name": "prism_central_2",
+                        "workflow": "add_remove_vms_category",
+                        "category_config": [
+                            {
+                                "category_name": "$var_cat_name_1$:$var_cat_val_1$",
+                                "vm_name_pattern": ".*T[6-9].*"
+                            }
+                        ],
+                        "operation": "add",
+                        "description": "Add new vms to protected category in PC2"
+                    }
+                ]
+            },
+            {
+                "description": "Migrate workflows between PC2 and PC3",
+                "workflow_group": [
+                    {
+                        "workflow": "pfo",
+                        "pc_name": "prism_central_2",
+                        "remote_pc_name": "prism_central_3",
+                        "failover": true,
+                        "failback": true,
+                        "rp_name_list": [
+                            "st-rp-pc2-pc-3"
+                        ],
+                        "description": "Failover/Failback from PC2 to PC3"
+                    },
+                    {
+                        "workflow": "pfo",
+                        "pc_name": "prism_central_2",
+                        "remote_pc_name": "prism_central_3",
+                        "failover": true,
+                        "failback": false,
+                        "rp_name_list": [
+                            "st-rp-pc2-pc-3"
+                        ],
+                        "description": "Planned failover from PC2 to PC3(With integrity check)",
+                        "workload_config": [
+                            {
+                                "vm_name_regex": ".*T3.*",
+                                "wait_workload": true,
+                                "workload_args": {
+                                    "workload_name": "io_integrity_systest",
+                                    "clean_run": false,
+                                    "params": {
+                                        "mode": "verify"
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "workflow": "sleep",
+                        "pc_name": "prism_central_3",
+                        "duration_min": 70,
+                        "description": "Check if new recovery points are created on PC1 and PC2 for vms in pc3",
+                        "check_rpt_config": [
+                            {
+                                "vm_name_regex": ".*T[1-9].*",
+                                "min_rpt_count": 1,
+                                "pc_name": "prism_central_1"
+                            },
+                            {
+                                "vm_name_regex": ".*T[1-9].*",
+                                "min_rpt_count": 1,
+                                "pc_name": "prism_central_2"
+                            }
+                        ]
+                    },
+                    {
+                        "pc_name": "prism_central_3",
+                        "workflow": "add_remove_vms_category",
+                        "category_config": [
+                            {
+                                "category_name": "$var_cat_name_1$:$var_cat_val_1$",
+                                "vm_name_pattern": ".*B[1-4].*"
+                            }
+                        ],
+                        "operation": "add",
+                        "description": "Add new vms to protected category in PC3"
+                    }
+                ]
+            },
+            {
+                "description": "Migrate workflows between PC3 and PC1 ",
+                "workflow_group": [
+                    {
+                        "workflow": "pfo",
+                        "pc_name": "prism_central_3",
+                        "remote_pc_name": "prism_central_1",
+                        "failover": true,
+                        "failback": true,
+                        "rp_name_list": [
+                            "st-rp-pc1-pc-3"
+                        ],
+                        "description": "Failover/Failback from PC3 to PC1"
+                    },
+                    {
+                        "workflow": "pfo",
+                        "pc_name": "prism_central_3",
+                        "remote_pc_name": "prism_central_1",
+                        "failover": true,
+                        "failback": false,
+                        "rp_name_list": [
+                            "st-rp-pc1-pc-3"
+                        ],
+                        "description": "Planned failover from PC3 to PC1(With integrity check)",
+                        "workload_config": [
+                            {
+                                "vm_name_regex": ".*T3.*",
+                                "wait_workload": true,
+                                "workload_args": {
+                                    "workload_name": "io_integrity_systest",
+                                    "clean_run": false,
+                                    "params": {
+                                        "mode": "verify"
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "workflow": "sleep",
+                        "pc_name": "prism_central_1",
+                        "duration_min": 70,
+                        "description": "Check if new recovery points are created on PC2 and PC3 and for vms in pc1",
+                        "check_rpt_config": [
+                            {
+                                "vm_name_regex": ".*T[1-9].*|.*B[1-4].*",
+                                "min_rpt_count": 1,
+                                "pc_name": "prism_central_2"
+                            },
+                            {
+                                "vm_name_regex": ".*T[1-9].*|.*B[1-4].*",
+                                "min_rpt_count": 1,
+                                "pc_name": "prism_central_3"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "timeout": {
+            "rpj_timeout_secs": 7200,
+            "short_sleep_duration": 0,
+            "sleep_duration_min": 0,
+            "prism_sync_secs": 0
+        },
+        "verify_pe_in_pc_ops": true
+    }
+}
